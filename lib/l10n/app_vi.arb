@@ -1,0 +1,35 @@
+{
+  "appTitle": "Bộ Đếm Điểm",
+  "settings": "Cài Đặt",
+  "gameMode": "Chế Độ Chơi",
+  "selectOrCreateGameMode": "Chọn hoặc tạo chế độ chơi",
+  "viewSavedGames": "Xem Trận Đã Lưu",
+  "seePreviouslySavedGames": "Xem các trận đấu đã lưu trước đó",
+  "viewGameHistory": "Xem Lịch Sử Trận",
+  "seeActionsHistoryLog": "Xem nhật ký lịch sử hành động",
+  "keepScreenAwake": "Giữ Màn Hình Sáng",
+  "preventScreenFromTurningOff": "Ngăn màn hình tắt",
+  "language": "Ngôn Ngữ",
+  "selectLanguage": "Chọn ngôn ngữ",
+  "systemDefault": "Mặc Định Hệ Thống",
+  "cancel": "Hủy",
+  "history": "Lịch Sử",
+  "savedGames": "Trận Đã Lưu",
+  "gameDetails": "Chi Tiết Trận",
+  "chooseGameMode": "Chọn Chế Độ Chơi",
+  "createNewGameMode": "Tạo Chế Độ Chơi Mới",
+  "scoreCounter": "Bộ Đếm Điểm",
+  "noSavedGamesYet": "Chưa có trận đấu nào được lưu",
+  "deleteSavedGames": "Xóa Trận Đã Lưu",
+  "deleteConfirmSingle": "Bạn có chắc chắn muốn xóa trận đấu đã lưu này? Hành động này không thể hoàn tác.",
+  "deleteConfirmMultiple": "Bạn có chắc chắn muốn xóa {count} trận đấu đã lưu này? Hành động này không thể hoàn tác.",
+  "@deleteConfirmMultiple": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "delete": "Xóa"
+} 

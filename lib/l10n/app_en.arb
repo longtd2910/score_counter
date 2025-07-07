@@ -1,0 +1,35 @@
+{
+  "appTitle": "Score Counter",
+  "settings": "Settings",
+  "gameMode": "Game Mode",
+  "selectOrCreateGameMode": "Select or create a game mode",
+  "viewSavedGames": "View Saved Games",
+  "seePreviouslySavedGames": "See previously saved games",
+  "viewGameHistory": "View Game History",
+  "seeActionsHistoryLog": "See actions history log",
+  "keepScreenAwake": "Keep Screen Awake",
+  "preventScreenFromTurningOff": "Prevent screen from turning off",
+  "language": "Language",
+  "selectLanguage": "Select language",
+  "systemDefault": "System Default",
+  "cancel": "Cancel",
+  "history": "History",
+  "savedGames": "Saved Games",
+  "gameDetails": "Game Details",
+  "chooseGameMode": "Choose Game Mode",
+  "createNewGameMode": "Create New Game Mode",
+  "scoreCounter": "Score Counter",
+  "noSavedGamesYet": "No saved games yet",
+  "deleteSavedGames": "Delete Saved Games",
+  "deleteConfirmSingle": "Are you sure you want to delete this saved game? This action cannot be undone.",
+  "deleteConfirmMultiple": "Are you sure you want to delete these {count} saved games? This action cannot be undone.",
+  "@deleteConfirmMultiple": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "delete": "Delete"
+} 
