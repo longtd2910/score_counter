@@ -6,6 +6,7 @@ import 'package:score_counter/screens/history_screen.dart';
 import 'package:score_counter/screens/settings_screen.dart';
 import 'package:score_counter/widgets/add_player_dialog.dart';
 import 'package:score_counter/widgets/player_card.dart';
+import 'package:score_counter/widgets/compact_player_card.dart'; // Import the new widget
 
 class ScoreScreen extends StatefulWidget {
   final GameProvider gameProvider;
@@ -59,6 +60,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),
@@ -78,7 +81,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
             label: L10n.of(context).settings,
           ),
         ],
-        backgroundColor: Color(0xFF212121),
+        backgroundColor: colorScheme.surface,
         elevation: 2,
         onDestinationSelected: _onDestinationSelected,
         selectedIndex: _currentIndex,
@@ -95,8 +98,10 @@ class ScoreAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: colorScheme.surface,
       elevation: 0,
       title: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
@@ -296,12 +301,28 @@ class ScoreBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GameProvider>(
       builder: (context, gameProvider, child) {
+        final playerCount = gameProvider.players.length;
+        final useCompactLayout = playerCount >= 5;
+        
         return SafeArea(
           child: Column(
             spacing: 16,
             children: [
-              for (var i = 0; i < gameProvider.players.length; i++)
-                PlayerCard(playerIndex: i),
+              if (useCompactLayout)
+                // Use compact layout for 5 or more players
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    itemCount: playerCount,
+                    itemBuilder: (context, index) {
+                      return CompactPlayerCard(playerIndex: index);
+                    },
+                  ),
+                )
+              else
+                // Use regular layout for 4 or fewer players
+                for (var i = 0; i < playerCount; i++)
+                  PlayerCard(playerIndex: i),
               SizedBox(height: 2),
             ],
           ),

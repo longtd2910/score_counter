@@ -14,6 +14,9 @@ class PlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GameProvider>(
       builder: (context, gameProvider, child) {
+        // Check if we have 4 or more players
+        final bool showActionBar = gameProvider.players.length < 4;
+        
         return Expanded(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 8),
@@ -83,11 +86,13 @@ class PlayerCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                ActionBar(
-                  gameMode: gameProvider.currentGameMode!,
-                  changeScoreCallback: (ballNumber) =>
-                      gameProvider.updatePlayerScore(playerIndex, ballNumber),
-                ),
+                // Only show the ActionBar if we have fewer than 4 players
+                if (showActionBar)
+                  ActionBar(
+                    gameMode: gameProvider.currentGameMode!,
+                    changeScoreCallback: (ballNumber) =>
+                        gameProvider.updatePlayerScore(playerIndex, ballNumber),
+                  ),
               ],
             ),
           ),

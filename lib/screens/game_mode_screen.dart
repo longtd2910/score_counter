@@ -11,9 +11,18 @@ class GameModeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(L10n.of(context).chooseGameMode),
+        title: Text(
+          L10n.of(context).chooseGameMode,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: colorScheme.surface,
       ),
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
