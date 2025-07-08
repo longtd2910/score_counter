@@ -1,11 +1,16 @@
 package com.example.score_counter
 
 import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
+import android.view.View
 import android.widget.RemoteViews
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,6 +18,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import com.example.live_activities.LiveActivityManager
 import androidx.core.graphics.scale
+import androidx.core.graphics.toColorInt
 
 class CustomLiveActivityManager(context: Context) :
     LiveActivityManager(context) {
@@ -27,84 +33,63 @@ class CustomLiveActivityManager(context: Context) :
         context.packageName, R.layout.live_activity
     )
 
-    // This function is not necessary
-    // This function will load an image from a URL and resize it to 64dp
-    suspend fun loadImageBitmap(imageUrl: String?): Bitmap? {
-        // Convert 64dp to pixels based on device density
-        val dp = context.resources.displayMetrics.density.toInt()
-
-        return withContext(Dispatchers.IO) {
-            if (imageUrl.isNullOrEmpty()) return@withContext null
-            try {
-                val url = URL(imageUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connectTimeout = 3000
-                connection.readTimeout = 3000
-                connection.connect()
-                connection.inputStream.use { inputStream ->
-                    // Decode the bitmap from the input stream and resize it
-                    val originalBitmap = BitmapFactory.decodeStream(inputStream)
-                    originalBitmap?.let {
-                        val targetSize = 64 * dp
-                        val aspectRatio =
-                            it.width.toFloat() / it.height.toFloat()
-                        val (targetWidth, targetHeight) = if (aspectRatio > 1) {
-                            targetSize to (targetSize / aspectRatio).toInt()
-                        } else {
-                            (targetSize * aspectRatio).toInt() to targetSize
-                        }
-                        it.scale(targetWidth, targetHeight)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
+    // Create notification channel
+    init {
+        createNotificationChannel()
+    }
+    
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "score_counter_channel"
+            val channelName = "Score Counter Live Activity"
+            val channelDescription = "Displays ongoing game scores"
+            val importance = NotificationManager.IMPORTANCE_HIGH  // Changed from DEFAULT to HIGH
+            
+            val channel = NotificationChannel(channelId, channelName, importance).apply {
+                description = channelDescription
+                setShowBadge(true)
+                enableLights(true)
+                enableVibration(true)
             }
+            
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
     // This function will update the RemoteViews with the data
     private suspend fun updateRemoteViews(
-        team1Name: String,
-        team1Score: Int,
-        team2Name: String,
-        team2Score: Int,
-        timestamp: Long,
-        team1ImageUrl: String?,
-        team2ImageUrl: String?,
+        players: List<*>
     ) {
-        remoteViews.setTextViewText(R.id.team1_name, team1Name)
-        remoteViews.setTextViewText(R.id.team2_name, team2Name)
-        remoteViews.setTextViewText(R.id.score, "$team1Score : $team2Score")
+        val playerCount = players.size
+        
+        // Clear existing views before adding new ones
+        remoteViews.removeAllViews(R.id.player_container)
 
-        val elapsedRealtime = android.os.SystemClock.elapsedRealtime()
-        val currentTimeMillis = System.currentTimeMillis()
-        val base = elapsedRealtime - (currentTimeMillis - timestamp)
+        for (i in 0 until playerCount){
+            val playerData = players[i] as Map<String, Any>
+            val subViews = RemoteViews(context.packageName, R.layout.player_info)
 
-        remoteViews.setChronometer(R.id.match_time, base, null, true)
+            val colorInt = try {
+                playerData["color"].toString().toColorInt()
+            } catch (e: IllegalArgumentException) {
+                // fallback to white if parse fails
+                Color.WHITE
+            }
 
-        val team1Image =
-            if (!team1ImageUrl.isNullOrEmpty()) loadImageBitmap(
-                team1ImageUrl
-            ) else null
-        val team2Image =
-            if (!team2ImageUrl.isNullOrEmpty()) loadImageBitmap(
-                team2ImageUrl
-            ) else null
-
-        team1Image?.let { image ->
-            remoteViews.setImageViewBitmap(
-                R.id.team1_image_placeholder,
-                image,
+            subViews.setTextViewText(R.id.player_name, playerData["name"].toString())
+            subViews.setTextViewText(R.id.player_score, playerData["score"].toString())
+            subViews.setInt(
+                R.id.player_circle,
+                "setColorFilter",
+                colorInt
             )
-        }
 
-        team2Image?.let { image ->
-            remoteViews.setImageViewBitmap(
-                R.id.team2_image_placeholder,
-                image,
-            )
+            if (i == playerCount - 1){
+                subViews.setViewVisibility(R.id.separator, View.GONE)
+            }
+
+            remoteViews.addView(R.id.player_container, subViews)
         }
     }
 
@@ -118,39 +103,27 @@ class CustomLiveActivityManager(context: Context) :
         event: String,
         data: Map<String, Any>
     ): Notification {
-        val matchName = data["matchName"] as String
-        val timestamp = data["matchStartDate"] as Long
-        val team1Name = data["teamAName"] as String
-        val team1Score = data["teamAScore"] as Int
-        val team2Name = data["teamBName"] as String
-        val team2Score = data["teamBScore"] as Int
+        val players = data["players"] as List<*>
+        val gameMode = data["gameMode"] as String
+        val channelId = data["channelId"] as? String ?: "score_counter_channel"
 
-        /// If the event is "update", skip images as previous notification already downloaded them
-        val team1ImageUrl =
-            if (event == "update") null else data["teamAImageUrl"] as String?
-        val team2ImageUrl =
-            if (event == "update") null else data["teamBImageUrl"] as String?
+        updateRemoteViews(players)
 
-        updateRemoteViews(
-            team1Name,
-            team1Score,
-            team2Name,
-            team2Score,
-            timestamp,
-            team1ImageUrl,
-            team2ImageUrl,
-        )
+        // For Android O and above, set the channel ID
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification.setChannelId(channelId)
+        }
 
         return notification
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.pool_ball_icon)
             .setOngoing(true)
-            .setContentTitle("$team1Name vs $team2Name")
+            .setContentTitle(gameMode)
             .setContentIntent(pendingIntent)
-            .setContentText("$team1Score : $team2Score")
+            .setContentText("Game in progress")  // Added content text
             .setStyle(Notification.DecoratedCustomViewStyle())
             .setCustomContentView(remoteViews) // Collapsed view
             .setCustomBigContentView(remoteViews) // Expanded view
-            .setPriority(Notification.PRIORITY_LOW)
+            .setPriority(Notification.PRIORITY_HIGH)  // Changed from LOW to HIGH
             .setCategory(Notification.CATEGORY_EVENT)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .build()

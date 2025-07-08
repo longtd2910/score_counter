@@ -4,35 +4,50 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:layout_marginEnd="8dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/player_score"
+        <FrameLayout
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/circle"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:layout_height="48dp">
+
+            <ImageView
+                android:id="@+id/player_circle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/circle" />
+
+            <TextView
+                android:id="@+id/player_score"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/player_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
+            android:maxLength="10"
             android:maxLines="1"
             android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:layout_marginTop="4dp" />
+            android:textSize="12sp" />
+
     </LinearLayout>
 
-    <!-- simple separator for all but last—you can hide it dynamically too -->
-    <View
-        android:id="@+id/divider"
+    <!-- SEPARATOR -->
+    <ImageView
+        android:id="@+id/separator"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#444444"
-        android:layout_marginEnd="8dp" />
+        android:layout_marginHorizontal="8dp"
+        android:src="@drawable/separator" />
 </merge>
