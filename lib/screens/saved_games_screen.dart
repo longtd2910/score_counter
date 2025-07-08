@@ -129,11 +129,20 @@ class _SavedGamesScreenState extends State<SavedGamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return PopScope(
       canPop: true,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(L10n.of(context).savedGames),
+          backgroundColor: colorScheme.surface,
+          title: Text(
+            L10n.of(context).savedGames,
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())

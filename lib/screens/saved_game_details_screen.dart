@@ -14,13 +14,22 @@ class SavedGameDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     // Sort players by score (highest first)
     final sortedPlayers = List<Player>.from(savedGame.players)
       ..sort((a, b) => b.score.compareTo(a.score));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(L10n.of(context).gameDetails),
+        backgroundColor: colorScheme.surface,
+        title: Text(
+          L10n.of(context).gameDetails,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

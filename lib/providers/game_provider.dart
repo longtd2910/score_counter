@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -283,26 +285,26 @@ class GameProvider with ChangeNotifier {
   Future<void> _addHistoryEntry(HistoryEntry entry) async {
     _history.add(entry);
 
-    final Map<String, dynamic> data = {
-      'players': [
-        for (var player in _players)
-          {'name': player.name, 'score': player.score, 'color': ColorUtils.intToHex(player.color.value)},
-      ],
-      'gameMode': _currentGameMode?.title["en"] ?? "Score Counter",
-      'channelId': 'score_counter_channel', // Pass channel ID in data
-    };
+    // final Map<String, dynamic> data = {
+    //   'players': [
+    //     for (var player in _players)
+    //       {'name': player.name, 'score': player.score, 'color': ColorUtils.intToHex(player.color.value)},
+    //   ],
+    //   'gameMode': _currentGameMode?.title["en"] ?? "Score Counter",
+    //   'channelId': 'score_counter_channel', // Pass channel ID in data
+    // };
 
-    // Use unique ID based on timestamp for each notification
-    final String notificationId = '${entry.timestamp.millisecondsSinceEpoch}';
+    // // Use unique ID based on timestamp for each notification
+    // final String notificationId = '${entry.timestamp.millisecondsSinceEpoch}';
     
-    try {
-      await _liveActivities.createActivity(
-        notificationId,
-        data,
-      );
-    } catch (e) {
-      print("Error creating live activity: $e");
-    }
+    // try {
+    //   await _liveActivities.createActivity(
+    //     notificationId,
+    //     data,
+    //   );
+    // } catch (e) {
+    //   print("Error creating live activity: $e");
+    // }
 
     await _storageService.addHistoryEntry(entry);
 
